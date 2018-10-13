@@ -46,7 +46,19 @@ boolean receiveTesting = false;
   @return
 */
 void beginBluetooth(int baudRate) {
+  pinMode(connectionStatusPin, INPUT);
+  Serial.begin(baudRate);
+  while (!Serial);
+  if (includeErrorMessage) {
+    Serial.print("\nSketch:   ");   Serial.println(__FILE__);
+    Serial.print("Uploaded: ");   Serial.println(__DATE__);
+  }
 
+
+  BTSerial.begin(baudRate);
+  if (includeErrorMessage) {
+    Serial.println("BTserial started at " + String(baudRate));
+  }
 }
 
 
@@ -252,7 +264,7 @@ String addCheckSum(String data) {
   @return boolean - false if there is no incomming tranmission
 */
 boolean receivedNewData() {
- 
+
 }
 
 /*
