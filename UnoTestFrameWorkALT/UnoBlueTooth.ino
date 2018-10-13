@@ -625,7 +625,11 @@ boolean confirmCheckSum(String data) {
   @return
 */
 String removeCheckSum(String data) {
+  int csStart = data.indexOf(checksumStartMarker);
+  int csEnd = data.indexOf(checksumEndMarker);
 
+  data.remove(csStart, csEnd - csStart + 1);
+  return data;
 }
 
 /*
