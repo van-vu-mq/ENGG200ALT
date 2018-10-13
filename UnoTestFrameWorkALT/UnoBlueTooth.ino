@@ -582,7 +582,8 @@ String readFromBTBuffer() {
   @return String - unencrypted data
 */
 String decrypt(String data) {
-
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+  return data;
 }
 
 /*
