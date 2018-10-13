@@ -375,7 +375,12 @@ void transmitData(String data) {
   @return String
 */
 String transformToString(String dataArray[], int arraySize) {
+  String s = "";
 
+  for (int i = 0; i < arraySize; i++) {
+    s.concat(dataArray[i]);
+  }
+  return s;
 }
 
 /*
