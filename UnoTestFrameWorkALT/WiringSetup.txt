@@ -1,0 +1,10 @@
+
+UNO		HM-10
+
+5v		VCC
+GND		GND
+TX		D8
+RX		D9
+BRK		-
+STATE	Resisitor>LED>GND
+STATE	D13
