@@ -76,7 +76,7 @@ void beginBluetooth(int baudRate) {
   @return String *pointer
 */
 String * getBTData() {
-
+  return storedTransmission;
 }
 
 /*
@@ -85,7 +85,7 @@ String * getBTData() {
   @return int storedSize
 */
 int getBTDataSize() {
-
+  return storedSize;
 }
 
 /*
@@ -94,7 +94,12 @@ int getBTDataSize() {
   @return
 */
 void clearMemory() {
-
+  /*
+     Assign empty arrays to all storage
+     Reset size tracking to null
+  */
+  storedTransmission = new String[0];
+  storedSize = 0;
 }
 
 /*
