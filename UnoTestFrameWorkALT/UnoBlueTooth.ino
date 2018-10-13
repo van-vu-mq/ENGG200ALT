@@ -365,7 +365,35 @@ boolean receivedAcknowlegement() {
   @return boolean - false if acknowledgement not received
 */
 void transmitData(String data) {
+  // NOTE: BLE 4.0 standards - can only transmit 20 bytes per packet
+  // Send packet in groups of 20 bytes (equivalent of 20x char)
+  int packetByteLimit = 20;
+  int packetParts = data.length() /  packetByteLimit; // number of max size packets in given data
 
+  if (testingMessages) {
+    Serial.println("\nPacket being sent");
+    Serial.println("Whole packet:");
+    Serial.println(data);
+    Serial.println("\nSent Packet as parts - BLE byte limit per packet");
+  }
+  //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+  // NOTE: may need to delay time between each transmission
+  // Transmit max sized packets using substring(start, end)
+  for (int i = 0; i < packetParts; i++) {
+    int packetStart = i * packetByteLimit;
+    int packetEnd = packetStart + packetByteLimit;
+    BTSerial.print(data.substring(packetStart, packetEnd));
+    if (testingMessages) {
+      Serial.println(data.substring(packetStart, packetEnd));
+    }
+    //delay(100);
+  }
+
+  // Transmit tail end - non maxed sized packet using substring(start)
+  BTSerial.print(data.substring(packetParts * packetByteLimit));
+  if (testingMessages) {
+    Serial.println(data.substring(packetParts * packetByteLimit));
+  }
 }
 
 /*
