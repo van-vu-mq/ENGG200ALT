@@ -389,7 +389,8 @@ String transformToString(String dataArray[], int arraySize) {
   @return String - the data in encrypted form
 */
 String encrypt(String data) {
-
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+  return data;
 }
 
 /*
