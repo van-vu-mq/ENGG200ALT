@@ -354,7 +354,8 @@ boolean sendData(String data[], int arraySize) {
   @return boolean - false if acknowledgement not received
 */
 boolean receivedAcknowlegement() {
-
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+  return true;
 }
 
 /*
