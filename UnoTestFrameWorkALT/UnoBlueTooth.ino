@@ -59,6 +59,7 @@ void beginBluetooth(int baudRate) {
   if (includeErrorMessage) {
     Serial.println("BTserial started at " + String(baudRate));
   }
+  doATCommandSetup();
 }
 
 
@@ -112,7 +113,28 @@ boolean getConnectionStatus() {
   @return boolean - false if pairing unsuccessfull
 */
 boolean connectBluetooth() {
+  if (!canDoAT()) {
+    return false;
+  }
+  String successFlags[] = {"OK", "Set"};
+  String response = "";
 
+  BTSerial.print("AT+CON" + MegaMAC);
+
+  response = atResponse();
+
+  int numFlags = sizeof(successFlags) / sizeof(successFlags[0]);
+  if (isATSucessfull(response, successFlags, numFlags)) {
+    if (includeErrorMessage) {
+      Serial.println("Bluetooth has been connected");
+    }
+    return true;
+  } else {
+    if (includeErrorMessage) {
+      Serial.println("Bluetooth failed to connect");
+    }
+    return false;
+  }
 }
 
 /*
@@ -121,7 +143,10 @@ boolean connectBluetooth() {
   @return
 */
 void doATCommandSetup() {
-
+  if (canDoAT()) {
+    changeRole(0);
+    changeName("UnoBluetooth");
+  }
 }
 
 /*
