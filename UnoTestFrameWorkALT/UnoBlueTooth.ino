@@ -574,6 +574,68 @@ void rebuildData(String dataFromBT) {
 */
 String readFromBTBuffer() {
 
+  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  if (receiveTesting) {
+    //temporary sample data
+    String testData = "<&1999750704*!#one$#two$#test$#234324$#453sdf3243$@>";
+    return testData;
+  }
+  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+  // No communication on Bluetooth Serial
+  if (BTSerial.available() <= 0) {
+    return "";
+  }
+
+  // markers: startPacket, endPacket
+  String packet = "";
+  char fromBT = BTSerial.read();
+  int timeout = 5000;
+  unsigned long timePrev = millis();
+
+  // read until start of packet marker is found
+  while (fromBT != packetStartMarker) {
+    if (millis() - timePrev >= timeout) {
+      if (includeErrorMessage) {
+        Serial.println("Read from buffer TIMEOUT1 - no start packet marker");
+        Serial.println(packet);
+      }
+      return "TIMEOUT";
+    }
+    if (BTSerial.available()) {
+      fromBT = BTSerial.read();
+      packet = packet + fromBT;
+      Serial.print(fromBT);
+      timePrev = millis();
+    }
+
+  }
+
+  // start of packet found
+  // store
+  packet = packet + fromBT;
+
+  // read until end of packet marker is found
+  while (fromBT != packetEndMarker) {
+    if (millis() - timePrev >= timeout) {
+      if (includeErrorMessage) {
+        Serial.println("Read from buffer TIMEOUT2 - no end packet marker");
+        Serial.println(packet);
+        while (BTSerial.available()) {
+          BTSerial.read();
+        }
+      }
+      return "TIMEOUT";
+    }
+    if (BTSerial.available()) {
+      fromBT = BTSerial.read();
+      packet =  packet + fromBT;
+      timePrev = millis();
+    }
+  }
+
+  return packet;
 }
 
 /*
