@@ -299,6 +299,7 @@ boolean canDoAT() {
 /************************/
 /************************************************************************************************************************/
 
+
 /*
   @desc Handles the transmission process for an array of Strings
   @param String data[] - array of message to be sent
@@ -471,7 +472,7 @@ String addCheckSum(String data) {
 
   // calculate checksum
   uint32_t checksum = CRC32::calculate(byteBuffer, numBytes);
-  
+
   // wrap checksum with markers
   // append checksum to data String
   data = checksumStartMarker + String(checksum) + checksumEndMarker + data;
@@ -485,6 +486,8 @@ String addCheckSum(String data) {
 /*     Receive          */
 /************************/
 /************************************************************************************************************************/
+
+
 
 /*
   @desc Checks if there is incoming transmission on the Bluetooth Serial.
@@ -521,7 +524,7 @@ boolean receivedNewData() {
 
   if (!confirmCheckSum(dataFromBT)) {
     Serial.println("failed checksum");
-    return NULL;
+    return false;
   } else {
     // send acknowledge
 
@@ -605,7 +608,6 @@ String readFromBTBuffer() {
     return "";
   }
 
-  // markers: startPacket, endPacket
   String packet = "";
   char fromBT = BTSerial.read();
   int timeout = 5000;
@@ -720,7 +722,7 @@ String removeCheckSum(String data) {
 void removeMarkers() {
   // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
   char markers[] = {lineStartMarker, lineEndMarker};
-  
+
   // for every line in the array
   for (int i = 0; i < storedSize; i++) {
     // for every marker
@@ -735,11 +737,33 @@ void removeMarkers() {
 }
 
 /************************************************************************************************************************/
+
+
+void sendOneChar() {
+  char c = ' ';
+  if (Serial.available()) {
+    c = Serial.read();
+  }
+  BTSerial.write(c);
+}
+
+void recieveOneChar() {
+  char c = ' ';
+  if (BTSerial.available()) {
+    c = BTSerial.read();
+  }
+  Serial.write(c);
+}
+
+
+
+/************************************************************************************************************************/
 /************************/
 /*      Test            */
 /*    TO BE DELETED     */
 /************************/
 /************************************************************************************************************************/
+
 
 
 /*
