@@ -297,7 +297,54 @@ boolean canDoAT() {
   @return boolean - false if message is unable to be sent or not confirmed to be received by other paired device
 */
 boolean sendData(String data[], int arraySize) {
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 
+  // clone array so we can edit the data in memory
+  String copyData[arraySize];
+  memcpy(copyData, data, sizeof(data[0])*arraySize);
+
+  // Add markers
+  addMarker(&copyData[0], arraySize);
+  if (testingMessages) {
+    Serial.println("\nAfter adding markers");
+    for (int i = 0; i < arraySize; i++) {
+      Serial.println(copyData[i]);
+    }
+  }
+
+  // Convert to single String
+  String packet = transformToString(copyData, arraySize);
+  if (testingMessages) {
+    Serial.println("\nAfter transforming into a single string:");
+    Serial.println(packet);
+  }
+
+  // Encrypt data
+  packet = encrypt(packet);
+  if (testingMessages) {
+    Serial.println("\nAfter encrypting:");
+    Serial.println(packet);
+  }
+
+  // Prepend checksum
+  packet = addCheckSum(packet);
+  if (testingMessages) {
+    Serial.println("\nAfter Adding checksum:");
+    Serial.println(packet);
+  }
+
+
+  packet = packetStartMarker + packet + packetEndMarker;
+
+  // Write to BTSerial
+  int transmitAttempts = 5;
+  for (int i = 0; i < transmitAttempts; i++) {
+    transmitData(packet);
+    if (receivedAcknowlegement()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /*
