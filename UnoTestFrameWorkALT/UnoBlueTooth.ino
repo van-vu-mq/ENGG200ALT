@@ -76,7 +76,7 @@ void beginBluetooth(int baudRate) {
   @return String *pointer
 */
 String * getBTData() {
-  return storedTransmission;
+
 }
 
 /*
@@ -85,7 +85,7 @@ String * getBTData() {
   @return int storedSize
 */
 int getBTDataSize() {
-  return storedSize;
+
 }
 
 /*
@@ -94,12 +94,7 @@ int getBTDataSize() {
   @return
 */
 void clearMemory() {
-  /*
-     Assign empty arrays to all storage
-     Reset size tracking to null
-  */
-  storedTransmission = new String[0];
-  storedSize = 0;
+
 }
 
 /*
@@ -124,6 +119,7 @@ boolean getConnectionStatus() {
     delay(pollDelay);
   }
   return true;
+}
 
 /*
   @desc Pairs the BTLE with the device correseponding to the stored MAC address.
@@ -237,7 +233,36 @@ boolean isATSucessfull(String response, String successFlags[], int numFlags) {
   @return String - response
 */
 String atResponse() {
+  if (!canDoAT()) {
+    return "ERROR";
+  }
 
+  String response = "";
+  unsigned long timeout = 2000;
+  unsigned long timeStart = millis();
+
+  // Check if there is a response within timeout period
+  while (!BTSerial.available()) {
+    if ((millis() - timeStart) > timeout) {
+      if (includeErrorMessage) {
+        Serial.println("AT Response Timeout");
+      }
+      return "TIMEOUT";
+    }
+  }
+
+  // Allow full response to load into buffer
+  delay(150);
+
+  // Read response
+  while (BTSerial.available()) {
+    char c = BTSerial.read();
+    response.concat(c);
+  }
+  if (includeErrorMessage) {
+    Serial.println("\n" + response);
+  }
+  return response;
 }
 
 /*
@@ -247,7 +272,14 @@ String atResponse() {
   @return boolean - true if able to execute AT commands
 */
 boolean canDoAT() {
-
+  if (!getConnectionStatus()) {
+    return true;
+  } else {
+    if (includeErrorMessage) {
+      Serial.println("Error.\nBlueTooth is currently paired, unable to perform AT commands");
+    }
+    return false;
+  }
 }
 
 
