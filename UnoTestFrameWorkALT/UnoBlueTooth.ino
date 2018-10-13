@@ -651,7 +651,12 @@ void removeMarkers() {
   @return
 */
 void readFromSerialToBT() {
-
+  char c;
+  if (Serial.available()) {
+    c = Serial.read();
+    BTSerial.print(c);
+    Serial.print(c);
+  }
 }
 
 /*
@@ -660,7 +665,11 @@ void readFromSerialToBT() {
   @return
 */
 void readFromBlueTooth() {
-
+  char c;
+  if (BTSerial.available()) {
+    c = BTSerial.read();
+    Serial.write(c);
+  }
 }
 
 
