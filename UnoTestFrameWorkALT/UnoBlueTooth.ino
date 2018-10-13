@@ -103,8 +103,22 @@ void clearMemory() {
   @return boolean - true if paired, false if not paired
 */
 boolean getConnectionStatus() {
+  /*
+     Polls the state pin several times and checks whether it is BLINKING or HIGH.
+     HM-10 BLE module BLINKs every 500ms when not paired.
+     Polling needs to have sufficient fidelity to account for this timing.
+  */
+  int pollCount = 7;  // number of times to poll state pin
+  int pollDelay = 100; // period (ms) between polls
 
-}
+  while (pollCount > 0) {
+    if (!digitalRead(connectionStatusPin)) {
+      return false;
+    }
+    pollCount--;
+    delay(pollDelay);
+  }
+  return true;
 
 /*
   @desc Pairs the BTLE with the device correseponding to the stored MAC address.
