@@ -156,7 +156,20 @@ void doATCommandSetup() {
   @return
 */
 void changeName(String newName) {
+  String successFlags[] = {"OK", "Set", newName};
+  String response = "";
 
+  BTSerial.print("AT+NAME" + newName);
+  response = atResponse();
+
+  int numFlags = sizeof(successFlags) / sizeof(successFlags[0]);
+  if (includeErrorMessage) {
+    if (isATSucessfull(response, successFlags, numFlags)) {
+      Serial.println("BLE name changed to " + newName);
+    } else {
+      Serial.println("Failed to change name");
+    }
+  }
 }
 
 /*
