@@ -592,7 +592,30 @@ String decrypt(String data) {
   @return boolean - FALSE if data and checksum does not match
 */
 boolean confirmCheckSum(String data) {
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+  // double check the index interaction of indexOf() and substring()
 
+  // Read the data and extract the part that is the checksum using the checksum markers
+  // example markers start of checksum '&', end of checksum '*'
+  int csStart = data.indexOf(checksumStartMarker);
+  int csEnd = data.indexOf(checksumEndMarker);
+  String givenCheckSum = data.substring(csStart + 1, csEnd);
+
+  // Caclculate the checksum on the data
+  data = data.substring(csEnd + 1);
+
+  uint8_t byteBuffer[data.length() + 1];
+  data.getBytes(byteBuffer, data.length() + 1);
+  size_t numBytes = sizeof(byteBuffer) - 1;
+
+  uint32_t calculatedChecksum = CRC32::calculate(byteBuffer, numBytes);
+
+  // Compare the extracted checksum and the calculated checksum
+  if (String(calculatedChecksum).equals(givenCheckSum)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 
