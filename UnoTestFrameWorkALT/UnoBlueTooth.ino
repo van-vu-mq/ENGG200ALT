@@ -165,7 +165,27 @@ void changeName(String newName) {
   @return
 */
 void changeRole(int role) {
+  String successFlags[] = {"OK", "Set", String(role)};
+  String response = "";
+  String r = "Failed to change role";
 
+  if (role == 0)      {
+    r = "slave" ;
+  }
+  else if (role == 1) {
+    r = "master";
+  }
+
+  BTSerial.print("AT+ROLE" + String(role));
+  response = atResponse();
+  int numFlags = sizeof(successFlags) / sizeof(successFlags[0]);
+  if (includeErrorMessage) {
+    if (isATSucessfull(response, successFlags, numFlags)) {
+      Serial.println("BLE role changed to " + r);
+    } else {
+      Serial.println(r);
+    }
+  }
 }
 
 /*
