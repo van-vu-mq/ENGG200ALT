@@ -394,7 +394,21 @@ String encrypt(String data) {
   @return
 */
 void addMarker(String * dataArray, int arraySize) {
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 
+  // Add marker to every line in the array
+  // markers: startData, endData, startLine, endLine
+
+  // add marker to each line
+  for (int d = 0; d < arraySize; d++) {
+    *(dataArray + d) = lineStartMarker + (*(dataArray + d)) + lineEndMarker;
+  }
+
+  // add marker to beginning of data
+  *(dataArray) = dataStartMarker + (*(dataArray));
+
+  // add marker to ending of data
+  *(dataArray + arraySize - 1) = (*(dataArray + arraySize - 1)) + dataEndMarker;
 }
 
 /*
