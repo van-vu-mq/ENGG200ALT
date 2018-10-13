@@ -391,7 +391,7 @@ String transformToString(String dataArray[], int arraySize) {
 String encrypt(String data) {
   // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
   return data;
-}
+} 
 
 /*
   @desc Add markers to delimit end/beginning of file and lines
@@ -423,7 +423,22 @@ void addMarker(String * dataArray, int arraySize) {
   @return String - data prepended with checksum
 */
 String addCheckSum(String data) {
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+  // Uses CRC32 library
 
+  // convert data into byte representation
+  uint8_t byteBuffer[data.length() + 1];
+  data.getBytes(byteBuffer, data.length() + 1);
+  size_t numBytes = sizeof(byteBuffer) - 1;
+
+  // calculate checksum
+  uint32_t checksum = CRC32::calculate(byteBuffer, numBytes);
+  
+  // wrap checksum with markers
+  // append checksum to data String
+  data = checksumStartMarker + String(checksum) + checksumEndMarker + data;
+
+  return data;
 }
 
 
