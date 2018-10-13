@@ -76,7 +76,7 @@ void beginBluetooth(int baudRate) {
   @return String *pointer
 */
 String * getBTData() {
-
+  return storedTransmission;
 }
 
 /*
@@ -85,7 +85,7 @@ String * getBTData() {
   @return int storedSize
 */
 int getBTDataSize() {
-
+  return storedSize;
 }
 
 /*
@@ -94,7 +94,12 @@ int getBTDataSize() {
   @return
 */
 void clearMemory() {
-
+  /*
+     Assign empty arrays to all storage
+     Reset size tracking to null
+  */
+  storedTransmission = new String[0];
+  storedSize = 0;
 }
 
 /*
@@ -224,7 +229,12 @@ void changeRole(int role) {
   @return boolean - false if not all flags are found in the response
 */
 boolean isATSucessfull(String response, String successFlags[], int numFlags) {
-
+  for (int index = 0; index < numFlags; index++) {
+    if (response.indexOf(successFlags[index]) < 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /*
@@ -419,7 +429,7 @@ String transformToString(String dataArray[], int arraySize) {
 String encrypt(String data) {
   // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
   return data;
-} 
+}
 
 /*
   @desc Add markers to delimit end/beginning of file and lines
@@ -484,7 +494,67 @@ String addCheckSum(String data) {
   @return boolean - false if there is no incomming tranmission
 */
 boolean receivedNewData() {
+  // TODO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 
+  // failed to get communication from Bluetooth
+  String dataFromBT = readFromBTBuffer();
+  if (dataFromBT.equals(""))        {
+    return false;
+  }
+  if (dataFromBT.equals("TIMEOUT")) {
+    return false;
+  }
+
+  if (testingMessages) {
+    Serial.println("\nData read from BTSerial:");
+    Serial.println(dataFromBT);
+  }
+
+  // remove packet markers
+  dataFromBT.remove(dataFromBT.indexOf(packetStartMarker), 1);
+  dataFromBT.remove(dataFromBT.indexOf(packetEndMarker), 1);
+
+  if (testingMessages) {
+    Serial.println("\nData after removing packet markers:");
+    Serial.println(dataFromBT);
+  }
+
+  if (!confirmCheckSum(dataFromBT)) {
+    Serial.println("failed checksum");
+    return NULL;
+  } else {
+    // send acknowledge
+
+    dataFromBT = removeCheckSum(dataFromBT);
+    if (testingMessages) {
+      Serial.println("\nData after confirming and removing checksum:");
+      Serial.println(dataFromBT);
+    }
+
+    dataFromBT = decrypt(dataFromBT);
+
+    if (testingMessages) {
+      Serial.println("\nData after decrypting:");
+      Serial.println(dataFromBT);
+    }
+
+    rebuildData(dataFromBT);
+    if (testingMessages) {
+      Serial.println("\nData after being rebuilt:");
+      for (int i = 0; i < storedSize; i++) {
+        Serial.println(*(storedTransmission + i));
+      }
+    }
+
+    removeMarkers();
+    if (testingMessages) {
+      Serial.println("\nData after being removing markers:");
+      for (int i = 0; i < storedSize; i++) {
+        Serial.println(*(storedTransmission + i));
+      }
+    }
+  }
+  return storedTransmission;
 }
 
 /*
